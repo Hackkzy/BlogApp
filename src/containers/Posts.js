@@ -17,6 +17,7 @@ import {
 	Image,
 	View,
 } from "native-base";
+import moment from "moment/moment";
 
 const Posts = ({ navigation }) => {
 	const [posts, setPosts] = useState([]);
@@ -26,7 +27,7 @@ const Posts = ({ navigation }) => {
 	const { width } = useWindowDimensions();
 
 	useEffect(() => {
-		const route = `posts?per_page=10&page=${page}&_fields=title,excerpt,date`;
+		const route = `posts?per_page=10&page=${page}&_fields=id,title,excerpt,date`;
 		getPosts(route).then((res) => {
 			if (res.code !== "rest_post_invalid_page_number") {
 				setPosts((prevPosts) => [...prevPosts, ...res]);
@@ -37,7 +38,16 @@ const Posts = ({ navigation }) => {
 		});
 	}, [page]);
 	return (
-		<View flex={1} px="2" alignContent={"center"} justifyContent={"center"}>
+		<View
+			flex={1}
+			px="2"
+			alignContent={"center"}
+			justifyContent={"center"}
+			backgroundColor="#080606"
+		>
+			<Heading size="md" color="warmGray.200">
+				Posts
+			</Heading>
 			{posts.length > 0 ? (
 				<FlatList
 					onEndReached={() => {
@@ -52,21 +62,15 @@ const Posts = ({ navigation }) => {
 							onPress={() => navigation.navigate("Post", { post_id: item.id })}
 						>
 							<Box
+								borderColor="warmGray.200"
+								borderWidth={5}
 								rounded="lg"
 								overflow="hidden"
-								borderColor="coolGray.200"
-								borderWidth="1"
-								m="1"
-								_dark={{
-									borderColor: "coolGray.600",
-									backgroundColor: "gray.700",
-								}}
+								m="4"
+								backgroundColor="#080606"
 								_web={{
 									shadow: 2,
 									borderWidth: 0,
-								}}
-								_light={{
-									backgroundColor: "gray.50",
 								}}
 							>
 								<Box>
@@ -84,7 +88,7 @@ const Posts = ({ navigation }) => {
 											bg: "violet.400",
 										}}
 										_text={{
-											color: "warmGray.50",
+											color: "#d7d8dd",
 											fontWeight: "700",
 											fontSize: "xs",
 										}}
@@ -98,13 +102,14 @@ const Posts = ({ navigation }) => {
 								</Box>
 								<Stack p="4" space={3}>
 									<Stack space={2}>
-										<Heading size="md" ml="-1">
+										<Heading size="md" ml="-1" color="warmGray.200">
 											{item.title.rendered}
 										</Heading>
 									</Stack>
 									<RenderHTML
 										contentWidth={width}
 										source={{ html: item.excerpt.rendered }}
+										tagsStyles={{ body: { color: "#fff" } }}
 									/>
 									<HStack
 										alignItems="center"
@@ -112,14 +117,8 @@ const Posts = ({ navigation }) => {
 										justifyContent="space-between"
 									>
 										<HStack alignItems="center">
-											<Text
-												color="coolGray.600"
-												_dark={{
-													color: "warmGray.200",
-												}}
-												fontWeight="400"
-											>
-												{item.date}
+											<Text fontWeight="400" color="warmGray.200">
+												{moment(item.date, "YYYYMMDD").fromNow()}
 											</Text>
 										</HStack>
 									</HStack>
